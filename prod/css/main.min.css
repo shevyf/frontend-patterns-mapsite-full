@@ -1,0 +1,1 @@
+.container,.row,body,html{height:100%}#map-container{height:100%;background-color:#ccc}@media only screen and (orientation:portrait){#map-container{height:80%}#search-container{height:20%}}
