@@ -1,1 +1,1 @@
-.container,.row,body,html{height:100%}#map-container{height:100%;background-color:#ccc}@media only screen and (orientation:portrait){#map-container{height:80%}#search-container{height:20%}}
+.container,body,html{height:100%}.titlecase{text-transform:capitalize}.content{height:90%}.header{height:10%}.singleplace{margin:10px}.placename{font-size:1.2em;font-weight:500}.flickr{display:flex;flex-wrap:wrap;justify-content:center}#map-container{height:100%;background-color:#ccc}#search-container{overflow-y:auto}
