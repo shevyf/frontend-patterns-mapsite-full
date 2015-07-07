@@ -1,5 +1,5 @@
 # frontend-patterns-mapsite-full
-# Dev and Prod folders for the framework patterns Udacity project.
+## Dev and Prod folders for the framework patterns Udacity project.
 
 Frontend Nanodegree project: Frameworks and AJAX
 
