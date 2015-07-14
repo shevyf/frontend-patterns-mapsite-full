@@ -1,0 +1,72 @@
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+.titlecase {
+    text-transform: capitalize;
+}
+
+.container-fluid {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    max-width: 1020px;
+}
+
+.content {
+    /*height: 90%;*/
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    flex-grow: 1;
+}
+
+.header {
+    /*height: 10%;*/
+}
+
+.singleplace{
+    margin: 10px;
+}
+
+.placename {
+    font-size: 1.2em;
+    font-weight: 500;
+}
+
+.flickr {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#map-container {
+    /*height: 100%;*/
+    flex-grow: 1;
+    background-color: #ccc;
+}
+
+#search-container {
+    padding: 5px;
+}
+
+@media only screen and (max-width: 992px) {
+    .content {
+        flex-direction: column;
+    }
+    #search-container {
+        max-height: 15%;
+    }
+}
+
+/*@media (min-width: 992px)
+.container {
+    width: 970px;
+}*/
+
+/* TODO: add media queries to change dimensions based on screen size/orientation
+List of places to be left or top, scrollable. 
+Map to be right or bottom, resized to take up a minimum of 2/3rds the screen.
+InfoWindows reduce columns of photos to one on narrow screen */
+
