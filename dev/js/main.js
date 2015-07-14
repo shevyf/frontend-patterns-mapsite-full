@@ -1,11 +1,6 @@
 /*
 TODO:
-
-Grunt automation X
-One marker selected at a time (is this necessary?)
-Sort function to alphabetise items
-Research Search functionality inc autocomplete
-
+One marker selected at a time
 */
 
 //Starting Variables
@@ -65,7 +60,7 @@ var localMarkers = [
     {
         title: 'Dublin Castle',
         position: [53.343174, -6.267567],
-        type: 'historic'
+        type: 'restuarant'
     },
     {
         title: 'Georges Street',
@@ -132,7 +127,7 @@ var localMarkers = [
 //foursquare category codes for types in locations
 
 var categories = {
-    'art': '4bf58dd8d48988d166941735', // 507c8c4091d498d9fc8c67a9 outdoor art ('4bf58dd8d48988d166941735' sculpture garden)
+    'art': '4bf58dd8d48988d166941735', // sculpture garden
     'shopping': '4d4b7105d754a06378d81259', //shop and service
     'restaurant': '4d4b7105d754a06374d81259', //food
     'entertainment': '4bf58dd8d48988d1f2931735',  //performing arts
@@ -140,12 +135,13 @@ var categories = {
     'bar': '4d4b7105d754a06376d81259' //nightlife spot
 };
 
-//function to take a marker and popup and get flicker and foursquare data, create a string and set content of popup box
+//function to take a location, name of location, two functions which set flickr and fourquare data in a popup, and a category type. Gets flicker and foursquare data, creates two strings and passes them to functions which set content of popup box.
 //Note: Flickr's API requires that the callback name is specified with 'jsoncallback' instead of just 'callback' which is jQuery's default.
 
 var getFlickr = function(pos, name, flickr, foursq, type) {
     
     var flickrUrl = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=7abca36c88c5c619545ef842155974d9&lat='+pos[0]+'&lon='+pos[1]+'&radius=0.01&per_page=8&page=1&format=json';
+    
     $.ajax(flickrUrl, {
         dataType: 'jsonp',
         jsonp: 'jsoncallback',
@@ -164,10 +160,10 @@ var getFlickr = function(pos, name, flickr, foursq, type) {
     });
 
     var foursqUrl = 'https://api.foursquare.com/v2/venues/search/?ll='+pos[0]+','+pos[1]+'&radius=200&categoryId='+categories[type]+'&intent=browse&limit=8&client_id=JILQ425OSSB1A4PVRXHIOSMZLBMQ2LDZPPSDPBVPYIMLSVDQ&client_secret=RT0YLMXT4DRGCVZLTNKLKBTXHDCHFFPAE5AKZKPQ3SP15Q0R&v=20130815';
+    
     $.ajax(foursqUrl, {
         dataType: 'json',
         success: function(response) {
-            //console.log(response);
             var foursqStr = '<div class="foursquare col-md-5">';
             var allPlaces = response.response.venues;
             var placeData = '<div><h4>Nearby FourSquare Locations (<span class="titlecase">'+ type +'</span>)</h4></div>';
@@ -202,7 +198,7 @@ var getFlickr = function(pos, name, flickr, foursq, type) {
 
 // location object to go in MVVM array. Contains info about the location inc. whether it's visible in the search buttons or not, plus the marker and popup objects for each location (and listeners with closures)
 
-function maplocation(pos, name, type) {
+function maplocation(pos, name, type, showhideMarkers) {
     var self = this;
     self.position = pos;
     self.latlng = new google.maps.LatLng(pos[0], pos[1]);
@@ -237,18 +233,11 @@ function maplocation(pos, name, type) {
             getFlickr(self.position, self.name, self.flickr, self.foursquare, self.type);
             self.loaded = true;
         }
-        if (self.selected()) {
-
-            self.popup.open(map, self.marker);
-            self.marker.setAnimation(google.maps.Animation.BOUNCE);
-            }
-        else {
-            self.popup.close();
-            self.marker.setAnimation(null);
-        }
     });
     
-    self.toggleSelected = function() { self.selected(!self.selected()); };
+    self.toggleSelected = function() { 
+        showhideMarkers(self.selected);
+        };
     
     google.maps.event.addListener(self.marker, 'click', (function(toggle) {return toggle;} )(self.toggleSelected));
     
@@ -258,13 +247,23 @@ function maplocation(pos, name, type) {
     self.showButton = function(){self.visibleMarker(true);};
 }
 
+// viewmodel initialises an array of the objects above (sorted alphabetically)
+
 function markerViewModel() {
     self = this;
     
+    // function to close other markers and only show the info for selected marker. Passed to objects as they are initialised.
+    // this is then called whenever the click or closeclick events are triggered, or when the buttons in the search box are pressed.
+    self.showhideMarkers = function(markerselected) {
+        self.locations.forEach(function(location){ location.selected(false); });
+        markerselected(true);
+    };
+    
+    //array of location objects, initialised from the list of locations given previously, plus the function above.
     self.locations = (function(){
         var locationList = [];
         localMarkers.forEach(function(item) {
-            locationList.push(new maplocation(item.position, item.title, item.type));
+            locationList.push(new maplocation(item.position, item.title, item.type, self.showhideMarkers));
         });
         locationList.sort( function(first, second) { 
             return first.name < second.name ? -1 : (first.name > second.name ? 1 : 0 );
@@ -272,6 +271,8 @@ function markerViewModel() {
         return locationList;
     })();
     
+    // function to show/hide the buttons in the list as the search box is typed into. Resets when content has 0 length, i.e. is empty.
+    // TODO: this doesn't work in Firefox, as the includes function isn't implemented. Find another way!
     self.search = function() {
         var searchTerm = $('#searchbox').val().toLowerCase();
         if (searchTerm.length > 0) {
@@ -284,8 +285,25 @@ function markerViewModel() {
             self.locations.forEach(function(location){location.visibleMarker(true);});
             }
     };
+    
+    // computed function which watches all objects and sets them to marker bounce and visible popup if self.selected() returns true.
+    self.showhide = ko.computed(function(){
+        self.locations.forEach(function(location){
+            
+            if (location.selected()) { 
+                location.popup.open(map, location.marker);
+                location.marker.setAnimation(google.maps.Animation.BOUNCE);
+                }
+            else {
+                location.popup.close();
+                location.marker.setAnimation(null);
+            }
+        });
+    });
+
 }
 
+// function to initialise google map and knockout
 function initialise() {
     var mapbox = document.getElementById('map-container');
     var mapOptions = {
@@ -298,15 +316,15 @@ function initialise() {
     map = new google.maps.Map(mapbox, mapOptions);
     
     ko.applyBindings(new markerViewModel());
-    
-    
+        
 }
 
+// go!
 google.maps.event.addDomListener(window, 'load', initialise);
 
 
 /*
-AJAX flickr content for popups
+for my future reference: docs on AJAX flickr
 https://www.flickr.com/services/api/explore/flickr.photos.search
 https://www.flickr.com/services/api/flickr.photos.search.html
 https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=fc778e032734a15eb7f780767d7994ba&lat=53.343174&lon=-6.267567&radius=0.01&per_page=20&page=1&format=json&nojsoncallback=1&api_sig=865d52131b668519cec3b571100e3b65
