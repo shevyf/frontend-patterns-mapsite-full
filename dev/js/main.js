@@ -255,8 +255,9 @@ function markerViewModel() {
     // function to close other markers and only show the info for selected marker. Passed to objects as they are initialised.
     // this is then called whenever the click or closeclick events are triggered, or when the buttons in the search box are pressed.
     self.showhideMarkers = function(markerselected) {
+        var wasselected = markerselected();
         self.locations.forEach(function(location){ location.selected(false); });
-        markerselected(true);
+        markerselected(!wasselected);
     };
     
     //array of location objects, initialised from the list of locations given previously, plus the function above.
