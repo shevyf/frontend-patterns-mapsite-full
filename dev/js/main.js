@@ -60,7 +60,7 @@ var localMarkers = [
     {
         title: 'Dublin Castle',
         position: [53.343174, -6.267567],
-        type: 'restuarant'
+        type: 'restaurant'
     },
     {
         title: 'Georges Street',
@@ -145,6 +145,7 @@ var getFlickr = function(pos, name, flickr, foursq, type) {
     $.ajax(flickrUrl, {
         dataType: 'jsonp',
         jsonp: 'jsoncallback',
+        timeout: 5000,
         success: function(response) {
             var allPhotos = response.photos.photo;
             var flickrStr = '<div class="flickr col-md-7 col-sm-7">';
@@ -154,6 +155,12 @@ var getFlickr = function(pos, name, flickr, foursq, type) {
                 var thisImage = '<div><img class="img-responsive" src="'+photoUrl+'"></div>';
                 flickrStr += thisImage;
             }
+            flickrStr += '</div>';
+            flickr(flickrStr);
+        },
+        error: function(xhr, status, thrownError) {
+            var flickrStr = '<div class="flickr col-md-7 col-sm-7">';
+            flickrStr += "<h4>Sorry, this content isn't loading right now.</h4><p>" + status + ": " + thrownError + "</p>";
             flickrStr += '</div>';
             flickr(flickrStr);
         }
@@ -192,6 +199,12 @@ var getFlickr = function(pos, name, flickr, foursq, type) {
             foursqStr += placeData;
             foursqStr += '</div>';
             foursq(foursqStr);
+        },
+        error: function(xhr, status, thrownError) {
+            var foursqStr = '<div class="foursquare col-md-5">';
+            foursqStr += "<h4>Sorry, this content isn't loading right now.</h4><p>" + status + ": " + thrownError + "</p>";
+            foursqStr += '</div>';
+            foursqStr(flickrStr);
         }
     });
 };

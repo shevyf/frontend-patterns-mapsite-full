@@ -1,6 +1,11 @@
+/*
+TODO: font size on high-resolution small screens
+*/
+
 html, body {
     height: 100%;
     overflow: hidden;
+    font-size: 1em;
 }
 
 .titlecase {
@@ -45,7 +50,19 @@ html, body {
     padding: 5px;
 }
 
-@media only screen and (max-width: 992px) {
+#searchbox {
+    max-width: 100%;
+}
+
+.btn {
+    margin: 5px;
+    border-radius: 5px;
+    border: 1px solid rgba(38, 181, 159, 0.56);
+    padding: 3px;
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+@media only screen and (max-width: 992px){
     .content {
         flex-direction: column;
     }
@@ -54,4 +71,11 @@ html, body {
     }
 }
 
-
+@media (max-device-width: 600px) {
+    .btn, #searchbox, h3 {
+        font-size: 2em;
+    }
+    h1 {
+        font-size: 3em;
+    }
+}
