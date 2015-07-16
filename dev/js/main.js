@@ -350,4 +350,10 @@ https://www.flickr.com/services/api/flickr.photos.search.html
 https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=fc778e032734a15eb7f780767d7994ba&lat=53.343174&lon=-6.267567&radius=0.01&per_page=20&page=1&format=json&nojsoncallback=1&api_sig=865d52131b668519cec3b571100e3b65
 */
 
-Offline.on('confirmed-down', Offline.check());
+var run = function(){
+    if (Offline.state === 'up') {
+        Offline.check();
+    }
+};
+
+setInterval(run, 10000);
