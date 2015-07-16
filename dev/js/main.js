@@ -149,8 +149,8 @@ var getFlickr = function(pos, name, flickr, foursq, type) {
         success: function(response) {
             var allPhotos = response.photos.photo;
             var flickrStr = '<div class="flickr col-md-7 col-sm-7">';
-            
-            for (i=0; i <allPhotos.length; i++) {
+            var photolen = allPhotos.length;
+            for (i=0; i <photolen; i++) {
                 var photoUrl = 'https://farm'+ allPhotos[i].farm +'.staticflickr.com/'+ allPhotos[i].server +'/'+ allPhotos[i].id +'_'+ allPhotos[i].secret +'_q.jpg';
                 var thisImage = '<div><img class="img-responsive" src="'+photoUrl+'"></div>';
                 flickrStr += thisImage;
@@ -174,7 +174,8 @@ var getFlickr = function(pos, name, flickr, foursq, type) {
             var foursqStr = '<div class="foursquare col-md-5">';
             var allPlaces = response.response.venues;
             var placeData = '<div><h4>Nearby FourSquare Locations (<span class="titlecase">'+ type +'</span>)</h4></div>';
-            for (i=0; i < allPlaces.length; i++) {
+            var placeslen = allPlaces.length;
+            for (i=0; i < placeslen; i++) {
                 var thisPlace = allPlaces[i];
 
                 placeData += '<div class="singleplace"><div class="placename">'+thisPlace.name+'</div>';
@@ -204,7 +205,7 @@ var getFlickr = function(pos, name, flickr, foursq, type) {
             var foursqStr = '<div class="foursquare col-md-5">';
             foursqStr += "<h4>Sorry, this content isn't loading right now.</h4><p>" + status + ": " + thrownError + "</p>";
             foursqStr += '</div>';
-            foursqStr(flickrStr);
+            foursq(foursqStr);
         }
     });
 };
@@ -217,7 +218,8 @@ function maplocation(pos, name, type, showhideMarkers) {
     self.latlng = new google.maps.LatLng(pos[0], pos[1]);
     self.name = name;
     self.type = type;
-    self.loaded = false;
+    self.loaded = ko.observable(false);
+    self.lastload = Date.now();
     self.icon = 'icons/'+type.toLowerCase()+'.png';
     self.flickr = ko.observable('<img src="images/ajax-loader.gif">');
     self.foursquare = ko.observable('<img src="images/ajax-loader.gif">');
@@ -242,14 +244,18 @@ function maplocation(pos, name, type, showhideMarkers) {
     });
     
     self.selectMarker = ko.computed(function() {
-        if (!self.loaded){
+        if (!self.loaded()){
             getFlickr(self.position, self.name, self.flickr, self.foursquare, self.type);
-            self.loaded = true;
+            self.loaded(true);
         }
     });
     
     self.toggleSelected = function() { 
         showhideMarkers(self.selected);
+        if ((Date.now()-self.lastload)> 10000) {
+            self.lastload = Date.now();
+            self.loaded(false);
+        }
         };
     
     google.maps.event.addListener(self.marker, 'click', (function(toggle) {return toggle;} )(self.toggleSelected));
@@ -343,3 +349,5 @@ https://www.flickr.com/services/api/explore/flickr.photos.search
 https://www.flickr.com/services/api/flickr.photos.search.html
 https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=fc778e032734a15eb7f780767d7994ba&lat=53.343174&lon=-6.267567&radius=0.01&per_page=20&page=1&format=json&nojsoncallback=1&api_sig=865d52131b668519cec3b571100e3b65
 */
+
+Offline.on('confirmed-down', Offline.check());
