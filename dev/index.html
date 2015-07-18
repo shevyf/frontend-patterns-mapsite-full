@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-
     <title>A Visitor's Guide to Dublin</title>
     <script src="js/jQuery.min.js"></script>
 
-    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!--<link rel="stylesheet" href="css/bootstrap.min.css">-->
     <script src="https://maps.googleapis.com/maps/api/js"></script>
     <script src="js/knockout-3.3.0.js"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -20,25 +19,21 @@
 
   <body>
     <div class="container-fluid">
-      <div class="row header">
-        <div class="col-md-12">
+      <div class="header">
+        <div class="12">
           <h1>A Visitor's Guide to Dublin</h1>
         </div>
       </div>
-      <div class="row content">
-        <div class="col-md-3" id="search-container">
-            <div class="row">
-                <div class="col-md-12">
-                    <h3>Search</h3>
-                    <input data-bind="event: {input: search}" id="searchbox">
-                    <div data-bind="foreach: locations">
-                        <button class="btn btn-default" data-bind="text: name, visible: visibleMarker, click: toggleSelected"></button>
-                    </div>
-                </div>
+      <div class="content">
+        <div class id="search-container">
+            <h3>Search</h3>
+            <input data-bind="event: {input: search}" id="searchbox">
+            <div class="buttonbox" data-bind="foreach: locations">
+                <button class="btn btn-default" data-bind="text: name, visible: visibleMarker, click: toggleSelected"></button>
             </div>
         </div>
 
-        <div class="col-md-9" id="map-container">
+        <div class id="map-container">
         </div>
 
       </div>

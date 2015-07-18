@@ -1,7 +1,6 @@
 html,
 body {
     height: 100%;
-    overflow: hidden;
     font-size: 1em;
 }
 
@@ -11,16 +10,31 @@ body {
 
 .container-fluid {
     height: 100%;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flexbox;
+    display: -ms-flex;
     display: flex;
+    -webkit-flex-direction: column;
+    -moz-flex-direction: column;
+    -ms-flex-direction: column;
     flex-direction: column;
     max-width: 1020px;
 }
 
 .content {
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flexbox;
+    display: -ms-flex;
     display: flex;
+    -webkit-flex-direction: row;
+    -moz-flex-direction: row;
+    -ms-flex-direction: row;
     flex-direction: row;
     align-items: stretch;
     flex-grow: 1;
+    max-height: 100%;
 }
 
 .singleplace{
@@ -33,6 +47,10 @@ body {
 }
 
 .flickr {
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flexbox;
+    display: -ms-flex;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -45,10 +63,27 @@ body {
 
 #search-container {
     padding: 5px;
+    max-height: 100%;
+    max-width: 25%;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flexbox;
+    display: -ms-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    -moz-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
 }
 
 #searchbox {
+    width: 150px;
     max-width: 100%;
+}
+
+.buttonbox {
+    max-width: 100%;
+    overflow: scroll;
 }
 
 .btn {
@@ -61,10 +96,27 @@ body {
 
 @media only screen and (max-width: 992px){
     .content {
+        -webkit-flex-direction: column;
+        -moz-flex-direction: column;
+        -ms-flex-direction: column;
         flex-direction: column;
     }
     #search-container {
         max-height: 15%;
+        max-width: 100%;
+    }
+}
+
+@media only screen and (max-width: 992px) and (orientation: landscape){
+    .content {
+        -webkit-flex-direction: row;
+        -moz-flex-direction: row;
+        -ms-flex-direction: row;
+        flex-direction: row;
+    }
+    #search-container {
+        max-width: 20%;
+        max-height: 100%;
     }
 }
 
